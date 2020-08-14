@@ -16,54 +16,55 @@ module "signalfx-detectors-nagios-status-check" {
 
 Creates SignalFx detectors with the following checks:
 
-- Custom script status
+- Nagios check status
 
 This module has been designed to alert with the same behavior as [Nagios](https://nagios-plugins.org/doc/guidelines.html#AEN78), basically a gauge which is equal to 1 will trigger à `WARNING` and equal to 2 a `CRITICAL`. 
 
-On the agent side, you need to send your metrics with a metric named `gauge.status` in SignalFx, the `plugin_instance` dimension will allow you to find which script is failing. The easiest way to do that is to use the [exec collectd plugin](https://docs.signalfx.com/en/latest/integrations/agent/monitors/collectd-custom.html).
+On the agent side, you need to send your metrics with the [telegraf exec plugin][https://docs.signalfx.com/en/latest/integrations/agent/monitors/telegraf-exec.html] which includes a [parser for nagios](https://github.com/influxdata/telegraf/blob/master/plugins/parsers/nagios/parser.go). The metric is named `nagios_state.state`, you need to add an `extraDimensions` to your monitor in order to be able to differantiate multiple script states.
 
 Here is an example : 
 
 ```yaml
-- type: collectd/custom
+- type: telegraf/exec
   intervalSeconds: 30
-  template: |
-    LoadPlugin exec
-    <Plugin exec>
-       Exec "signalfx-agent" "/usr/local/bin/check-generic-status-nagios-plugin.sh" "/usr/local/bin/scripts/custom-nagios-script.pl"
-    </Plugin>
+  command: /usr/local/bin/scripts/check-ipmitool.pl
+  extraDimensions:
+    script: check_ipmitool
+  telegrafParser:
+    dataFormat: nagios
 ```
 
-The following script (`check-generic-status-nagios-plugin.sh` in the example above) takes a script path as an argument, execute it, check the output and send the status in the collectd format.
+Ideally, use an `extraDimensions` which allows to easily identify the executed script.
 
-```bash
-#!/bin/bash
+## Inputs
 
-INTERVAL="${COLLECTD_INTERVAL:-10}"
-HOSTNAME="${COLLECTD_HOSTNAME:-`hostname -f`}"
+| Name | Description | Type | Default | Required |
+|------|-------------|:----:|:-----:|:-----:|
+| detectors\_disabled | Disable all detectors in this module | bool | `"false"` | no |
+| environment | Infrastructure environment | string | n/a | yes |
+| filter\_custom\_excludes | List of tags to exclude when custom filtering is used | list | `[]` | no |
+| filter\_custom\_includes | List of tags to include when custom filtering is used | list | `[]` | no |
+| notifications | Notification recipients list for every detectors | list | n/a | yes |
+| prefixes | Prefixes list to prepend between brackets on every monitors names before environment | list | `[]` | no |
+| status\_check\_aggregation\_function | Aggregation function and group by for status\_check detector \(i.e. ".mean\(by=\['host'\]\)."\) | string | `""` | no |
+| status\_check\_disabled | Disable all alerting rules for status\_check detector | bool | `"null"` | no |
+| status\_check\_disabled\_critical | Disable critical alerting rule for status\_check detector | bool | `"null"` | no |
+| status\_check\_disabled\_warning | Disable warning alerting rule for status\_check detector | bool | `"null"` | no |
+| status\_check\_notifications | Notification recipients list for every alerting rules of status\_check detector | list | `[]` | no |
+| status\_check\_notifications\_critical | Notification recipients list for critical alerting rule of status\_check detector | list | `[]` | no |
+| status\_check\_notifications\_warning | Notification recipients list for warning alerting rule of status\_check detector | list | `[]` | no |
+| status\_check\_transformation\_function | Transformation function for status\_check detector \(mean, min, max\) | string | `"min"` | no |
+| status\_check\_transformation\_window | Transformation window for status\_check detector \(i.e. 5m, 20m, 1h, 1d\) | string | `"15m"` | no |
 
-declare -A STATUS
-STATUS=( ["OK"]=0 ["WARNING"]=1 ["CRITICAL"]=2 ["UNKNOWN"]=3 )
+## Outputs
 
-while sleep "$INTERVAL"
-do
-	out=$(exec $@)
-	if [[ $out =~ "^OK" ]]; then
-		value=${STATUS["OK"]}
-	elif [[ $out =~ "^WARNING" ]]; then
-		value=${STATUS["WARNING"]}
-	elif [[ $out =~ "^CRITICAL" ]]; then
-		value=${STATUS["CRITICAL"]}
-	else 
-		value=${STATUS["UNKNOWN"]}
-	fi
-	script=$(basename $1)
-	echo "PUTVAL ${HOSTNAME}/nagios-${script%.*}/gauge-status interval=${INTERVAL} N:${value}"
-done
-```
+| Name | Description |
+|------|-------------|
+| status\_check\_id | id for detector status\_check |
 
 ## Related documentation
 
-[Official documentation for the custom plugin](https://docs.signalfx.com/en/latest/integrations/agent/monitors/collectd-custom.html)
+[Official documentation for the telegraf exec plugin](https://docs.signalfx.com/en/latest/integrations/agent/monitors/telegraf-exec.html)
 [Nagios documentation](https://nagios-plugins.org/doc/guidelines.html#AEN78)
-[Collectd plain text protocol](https://collectd.org/wiki/index.php/Plain_text_protocol)
+[Telegraf exec plugin](https://github.com/influxdata/telegraf/tree/master/plugins/inputs/exec)
+[Telegraf nagios parser](https://github.com/influxdata/telegraf/tree/master/plugins/parsers/nagios)
