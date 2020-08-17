@@ -38,192 +38,159 @@ variable "detectors_disabled" {
 
 # Kubernetes ingress detectors specific
 
-variable "heartbeat_disabled" {
-  description = "Disable all alerting rules for heartbeat detector"
-  type        = bool
-  default     = null
-}
-
-variable "heartbeat_notifications" {
-  description = "Notification recipients list for every alerting rules of heartbeat detector"
-  type        = list
-  default     = []
-}
-
-variable "heartbeat_timeframe" {
-  description = "Timeframe for system not reporting detector (i.e. \"10m\")"
-  type        = string
-  default     = "20m"
-}
-
-# Nginx_ingress_too_many_5xx detectors
-
-variable "nginx_ingress_too_many_5xx_disabled" {
-  description = "Disable all alerting rules for nginx_ingress_too_many_5xx detector"
-  type        = bool
-  default     = null
-}
-
-variable "nginx_ingress_too_many_5xx_disabled_critical" {
-  description = "Disable critical alerting rule for nginx_ingress_too_many_5xx detector"
-  type        = bool
-  default     = null
-}
-
-variable "nginx_ingress_too_many_5xx_disabled_warning" {
-  description = "Disable warning alerting rule for nginx_ingress_too_many_5xx detector"
-  type        = bool
-  default     = null
-}
-
-variable "nginx_ingress_too_many_5xx_notifications" {
-  description = "Notification recipients list for every alerting rules of nginx_ingress_too_many_5xx detector"
-  type        = list
-  default     = []
-}
-
-variable "nginx_ingress_too_many_5xx_notifications_warning" {
-  description = "Notification recipients list for warning alerting rule of nginx_ingress_too_many_5xx detector"
-  type        = list
-  default     = []
-}
-
-variable "nginx_ingress_too_many_5xx_notifications_critical" {
-  description = "Notification recipients list for critical alerting rule of nginx_ingress_too_many_5xx detector"
-  type        = list
-  default     = []
-}
-
-variable "nginx_ingress_too_many_5xx_aggregation_function" {
-  description = "Aggregation function and group by for nginx_ingress_too_many_5xx detector (i.e. \".mean(by=['host'])\")"
-  type        = string
-  default     = ".sum(by=['Ingress'])"
-}
-
-variable "nginx_ingress_too_many_5xx_transformation_function" {
-  description = "Transformation function for nginx_ingress_too_many_5xx detector (mean, min, max)"
-  type        = string
-  default     = "min"
-}
-
-variable "nginx_ingress_too_many_5xx_transformation_window" {
-  description = "Transformation window for nginx_ingress_too_many_5xx detector (i.e. 5m, 20m, 1h, 1d)"
-  type        = string
-  default     = "5m"
-}
-
-variable "nginx_ingress_too_many_5xx_threshold_critical" {
-  description = "Critical threshold for nginx_ingress_too_many_5xx detector"
+variable "minimum_traffic" {
+  description = "Minimum required traffic to evaluate rate of errors detectors"
   type        = number
-  default     = 20
+  default     = 4
 }
 
-variable "nginx_ingress_too_many_5xx_threshold_warning" {
-  description = "Warning threshold for nginx_ingress_too_many_5xx detector"
+# ingress_5xx detectors
+
+variable "ingress_5xx_disabled" {
+  description = "Disable all alerting rules for ingress_5xx detector"
+  type        = bool
+  default     = null
+}
+
+variable "ingress_5xx_disabled_critical" {
+  description = "Disable critical alerting rule for ingress_5xx detector"
+  type        = bool
+  default     = null
+}
+
+variable "ingress_5xx_disabled_warning" {
+  description = "Disable warning alerting rule for ingress_5xx detector"
+  type        = bool
+  default     = null
+}
+
+variable "ingress_5xx_notifications" {
+  description = "Notification recipients list for every alerting rules of ingress_5xx detector"
+  type        = list
+  default     = []
+}
+
+variable "ingress_5xx_notifications_warning" {
+  description = "Notification recipients list for warning alerting rule of ingress_5xx detector"
+  type        = list
+  default     = []
+}
+
+variable "ingress_5xx_notifications_critical" {
+  description = "Notification recipients list for critical alerting rule of ingress_5xx detector"
+  type        = list
+  default     = []
+}
+
+variable "ingress_5xx_aggregation_function" {
+  description = "Aggregation function and group by for ingress_5xx detector (i.e. \".mean(by=['host'])\")"
+  type        = string
+  #  default     = ".sum(by=['Ingress'])" # may be should we aggregate per ingress instead of per container
+  default = ""
+}
+
+variable "ingress_5xx_transformation_function" {
+  description = "Transformation function for ingress_5xx detector (i.e. \".mean(over='5m')\"))"
+  type        = string
+  default     = ""
+}
+
+variable "ingress_5xx_lasting_duration_seconds" {
+  description = "Minimum duration that conditions must be true before raising alert (in seconds)"
+  type        = number
+  default     = 300
+}
+
+variable "ingress_5xx_at_least_percentage" {
+  description = "Percentage of lasting that conditions must be true before raising alert (>= 0.0 and <= 1.0)"
+  type        = number
+  default     = 0.9
+}
+
+variable "ingress_5xx_threshold_critical" {
+  description = "Critical threshold for ingress_5xx detector"
   type        = number
   default     = 10
 }
 
-variable "nginx_ingress_too_many_5xx_aperiodic_duration" {
-  description = "Duration for the nginx_ingress_too_many_5xx block"
-  type        = string
-  default     = "10m"
+variable "ingress_5xx_threshold_warning" {
+  description = "Warning threshold for ingress_5xx detector"
+  type        = number
+  default     = 5
 }
 
-variable "nginx_ingress_too_many_5xx_aperiodic_percentage" {
-  description = "Percentage for the nginx_ingress_too_many_5xx block"
+# ingress_4xx detectors
+
+variable "ingress_4xx_disabled" {
+  description = "Disable all alerting rules for ingress_4xx detector"
+  type        = bool
+  default     = null
+}
+
+variable "ingress_4xx_disabled_critical" {
+  description = "Disable critical alerting rule for ingress_4xx detector"
+  type        = bool
+  default     = null
+}
+
+variable "ingress_4xx_disabled_warning" {
+  description = "Disable warning alerting rule for ingress_4xx detector"
+  type        = bool
+  default     = null
+}
+
+variable "ingress_4xx_notifications" {
+  description = "Notification recipients list for every alerting rules of ingress_4xx detector"
+  type        = list
+  default     = []
+}
+
+variable "ingress_4xx_notifications_warning" {
+  description = "Notification recipients list for warning alerting rule of ingress_4xx detector"
+  type        = list
+  default     = []
+}
+
+variable "ingress_4xx_notifications_critical" {
+  description = "Notification recipients list for critical alerting rule of ingress_4xx detector"
+  type        = list
+  default     = []
+}
+
+variable "ingress_4xx_aggregation_function" {
+  description = "Aggregation function and group by for ingress_4xx detector (i.e. \".mean(by=['host'])\")"
+  type        = string
+  #  default     = ".sum(by=['Ingress'])" # may be should we aggregate per ingress instead of per container
+  default = ""
+}
+
+variable "ingress_4xx_transformation_function" {
+  description = "Transformation function for ingress_4xx detector (i.e. \".mean(over='5m')\"))"
+  type        = string
+  default     = ""
+}
+
+variable "ingress_4xx_lasting_duration_seconds" {
+  description = "Minimum duration that conditions must be true before raising alert (in seconds)"
+  type        = number
+  default     = 300
+}
+
+variable "ingress_4xx_at_least_percentage" {
+  description = "Percentage of lasting that conditions must be true before raising alert (>= 0.0 and <= 1.0)"
   type        = number
   default     = 0.9
 }
 
-variable "nginx_ingress_too_many_5xx_clear_duration" {
-  description = "Duration for the nginx_ingress_too_many_5xx clear condition"
-  type        = string
-  default     = "15m"
-}
-
-# Nginx_ingress_too_many_4xx detectors
-
-variable "nginx_ingress_too_many_4xx_disabled" {
-  description = "Disable all alerting rules for nginx_ingress_too_many_4xx detector"
-  type        = bool
-  default     = null
-}
-
-variable "nginx_ingress_too_many_4xx_disabled_critical" {
-  description = "Disable critical alerting rule for nginx_ingress_too_many_4xx detector"
-  type        = bool
-  default     = null
-}
-
-variable "nginx_ingress_too_many_4xx_disabled_warning" {
-  description = "Disable warning alerting rule for nginx_ingress_too_many_4xx detector"
-  type        = bool
-  default     = null
-}
-
-variable "nginx_ingress_too_many_4xx_notifications" {
-  description = "Notification recipients list for every alerting rules of nginx_ingress_too_many_4xx detector"
-  type        = list
-  default     = []
-}
-
-variable "nginx_ingress_too_many_4xx_notifications_warning" {
-  description = "Notification recipients list for warning alerting rule of nginx_ingress_too_many_4xx detector"
-  type        = list
-  default     = []
-}
-
-variable "nginx_ingress_too_many_4xx_notifications_critical" {
-  description = "Notification recipients list for critical alerting rule of nginx_ingress_too_many_4xx detector"
-  type        = list
-  default     = []
-}
-
-variable "nginx_ingress_too_many_4xx_aggregation_function" {
-  description = "Aggregation function and group by for nginx_ingress_too_many_4xx detector (i.e. \".mean(by=['host'])\")"
-  type        = string
-  default     = ".sum(by=['Ingress'])"
-}
-
-variable "nginx_ingress_too_many_4xx_transformation_function" {
-  description = "Transformation function for nginx_ingress_too_many_4xx detector (mean, min, max)"
-  type        = string
-  default     = "min"
-}
-
-variable "nginx_ingress_too_many_4xx_transformation_window" {
-  description = "Transformation window for nginx_ingress_too_many_4xx detector (i.e. 5m, 20m, 1h, 1d)"
-  type        = string
-  default     = "5m"
-}
-
-variable "nginx_ingress_too_many_4xx_threshold_critical" {
-  description = "Critical threshold for nginx_ingress_too_many_4xx detector"
+variable "ingress_4xx_threshold_critical" {
+  description = "Critical threshold for ingress_4xx detector"
   type        = number
   default     = 40
 }
 
-variable "nginx_ingress_too_many_4xx_threshold_warning" {
-  description = "Warning threshold for nginx_ingress_too_many_4xx detector"
+variable "ingress_4xx_threshold_warning" {
+  description = "Warning threshold for ingress_4xx detector"
   type        = number
   default     = 20
 }
 
-variable "nginx_ingress_too_many_4xx_aperiodic_duration" {
-  description = "Duration for the nginx_ingress_too_many_4xx block"
-  type        = string
-  default     = "10m"
-}
-
-variable "nginx_ingress_too_many_4xx_aperiodic_percentage" {
-  description = "Percentage for the nginx_ingress_too_many_4xx block"
-  type        = number
-  default     = 0.9
-}
-
-variable "nginx_ingress_too_many_4xx_clear_duration" {
-  description = "Duration for the nginx_ingress_too_many_4xx clear condition"
-  type        = string
-  default     = "15m"
-}
