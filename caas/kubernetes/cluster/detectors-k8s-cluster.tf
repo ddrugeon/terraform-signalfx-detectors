@@ -2,9 +2,9 @@ resource "signalfx_detector" "heartbeat" {
   name = "${join("", formatlist("[%s]", var.prefixes))}[${var.environment}] Kubernetes API server heartbeat"
 
   program_text = <<-EOF
-		from signalfx.detectors.not_reporting import not_reporting
-		signal = data('apiserver_request_total', ${module.filter-tags.filter_custom})
-		not_reporting.detector(stream=signal, resource_identifier=['host'], duration='${var.heartbeat_timeframe}').publish('CRIT')
+    from signalfx.detectors.not_reporting import not_reporting
+    signal = data('apiserver_request_total', ${module.filter-tags.filter_custom})
+    not_reporting.detector(stream=signal, resource_identifier=['host'], duration='${var.heartbeat_timeframe}').publish('CRIT')
 EOF
 
   rule {
