@@ -17,33 +17,91 @@ EOF
   }
 }
 
-resource "signalfx_detector" "memory_used" {
-  name = "${join("", formatlist("[%s]", var.prefixes))}[${var.environment}] Docker memory used instances"
+resource "signalfx_detector" "cpu" {
+  name = "${join("", formatlist("[%s]", var.prefixes))}[${var.environment}] Docker container usage of cpu host"
 
   program_text = <<-EOF
-		A = data('memory.usage.limit', filter=filter('plugin', 'docker') and ${module.filter-tags.filter_custom})${var.memory_used_aggregation_function}
-		B = data('memory.usage.total', filter=filter('plugin', 'docker') and ${module.filter-tags.filter_custom})${var.memory_used_aggregation_function}
-		signal = ((B*100)/A).${var.memory_used_transformation_function}(over='${var.memory_used_transformation_window}').publish('signal')
-		detect(when(signal > ${var.memory_used_threshold_critical})).publish('CRIT')
-		detect(when(signal > ${var.memory_used_threshold_warning}) and when(signal <= ${var.memory_used_threshold_critical})).publish('WARN')
+		signal = data('cpu.percent', filter=filter('plugin', 'docker') and ${module.filter-tags.filter_custom})${var.cpu_aggregation_function}${var.cpu_transformation_function}.publish('signal')
+		detect(when(signal > ${var.cpu_threshold_warning})).publish('WARN')
+		detect(when(signal > ${var.cpu_threshold_major}) and when(signal <= ${var.cpu_threshold_warning})).publish('MAJOR')
 EOF
 
   rule {
-    description           = "are too high > ${var.memory_used_threshold_critical}"
-    severity              = "Critical"
-    detect_label          = "CRIT"
-    disabled              = coalesce(var.memory_used_disabled_critical, var.memory_used_disabled, var.detectors_disabled)
-    notifications         = coalescelist(var.memory_used_notifications_critical, var.memory_used_notifications, var.notifications)
+    description           = "is too high > ${var.cpu_threshold_warning}%"
+    severity              = "Warning"
+    detect_label          = "WARN"
+    disabled              = coalesce(var.cpu_disabled_warning, var.cpu_disabled, var.detectors_disabled)
+    notifications         = coalescelist(var.cpu_notifications_warning, var.cpu_notifications, var.notifications)
     parameterized_subject = "[{{ruleSeverity}}]{{{detectorName}}} {{{readableRule}}} ({{inputs.signal.value}}) on {{{dimensions}}}"
   }
 
   rule {
-    description           = "are too high > ${var.memory_used_threshold_warning}"
+    description           = "is too high > ${var.cpu_threshold_major}%"
+    severity              = "Major"
+    detect_label          = "MAJOR"
+    disabled              = coalesce(var.cpu_disabled_major, var.cpu_disabled, var.detectors_disabled)
+    notifications         = coalescelist(var.cpu_notifications_major, var.cpu_notifications, var.notifications)
+    parameterized_subject = "[{{ruleSeverity}}]{{{detectorName}}} {{{readableRule}}} ({{inputs.signal.value}}) on {{{dimensions}}}"
+  }
+}
+
+resource "signalfx_detector" "throttling" {
+  name = "${join("", formatlist("[%s]", var.prefixes))}[${var.environment}] Docker container cpu throttling time"
+
+  program_text = <<-EOF
+		A = data('throttling.usage.total', filter=filter('plugin', 'docker') and ${module.filter-tags.filter_custom})${var.throttling_aggregation_function}${var.throttling_transformation_function}
+		B = data('throttling.usage.limit', filter=filter('plugin', 'docker') and ${module.filter-tags.filter_custom})${var.throttling_aggregation_function}${var.throttling_transformation_function}
+		signal = (A/B).scale(100).publish('signal')
+		detect(when(signal > ${var.throttling_threshold_warning})).publish('WARN')
+		detect(when(signal > ${var.throttling_threshold_major}) and when(signal <= ${var.throttling_threshold_warning})).publish('MAJOR')
+EOF
+
+  rule {
+    description           = "is too high > ${var.throttling_threshold_warning}ns"
     severity              = "Warning"
     detect_label          = "WARN"
-    disabled              = coalesce(var.memory_used_disabled_warning, var.memory_used_disabled, var.detectors_disabled)
-    notifications         = coalescelist(var.memory_used_notifications_warning, var.memory_used_notifications, var.notifications)
+    disabled              = coalesce(var.throttling_disabled_warning, var.throttling_disabled, var.detectors_disabled)
+    notifications         = coalescelist(var.throttling_notifications_warning, var.throttling_notifications, var.notifications)
     parameterized_subject = "[{{ruleSeverity}}]{{{detectorName}}} {{{readableRule}}} ({{inputs.signal.value}}) on {{{dimensions}}}"
   }
 
+  rule {
+    description           = "is too high > ${var.throttling_threshold_major}ns"
+    severity              = "Major"
+    detect_label          = "MAJOR"
+    disabled              = coalesce(var.throttling_disabled_major, var.throttling_disabled, var.detectors_disabled)
+    notifications         = coalescelist(var.throttling_notifications_major, var.throttling_notifications, var.notifications)
+    parameterized_subject = "[{{ruleSeverity}}]{{{detectorName}}} {{{readableRule}}} ({{inputs.signal.value}}) on {{{dimensions}}}"
+  }
 }
+
+resource "signalfx_detector" "memory" {
+  name = "${join("", formatlist("[%s]", var.prefixes))}[${var.environment}] Docker memory usage"
+
+  program_text = <<-EOF
+		A = data('memory.usage.total', filter=filter('plugin', 'docker') and ${module.filter-tags.filter_custom})${var.memory_aggregation_function}${var.memory_transformation_function}
+		B = data('memory.usage.limit', filter=filter('plugin', 'docker') and ${module.filter-tags.filter_custom})${var.memory_aggregation_function}${var.memory_transformation_function}
+		signal = (A/B).scale(100).publish('signal')
+		detect(when(signal > ${var.memory_threshold_warning})).publish('WARN')
+		detect(when(signal > ${var.memory_threshold_major}) and when(signal <= ${var.memory_threshold_warning})).publish('MAJOR')
+EOF
+
+  rule {
+    description           = "is too high > ${var.memory_threshold_warning}%"
+    severity              = "Warning"
+    detect_label          = "WARN"
+    disabled              = coalesce(var.memory_disabled_warning, var.memory_disabled, var.detectors_disabled)
+    notifications         = coalescelist(var.memory_notifications_warning, var.memory_notifications, var.notifications)
+    parameterized_subject = "[{{ruleSeverity}}]{{{detectorName}}} {{{readableRule}}} ({{inputs.signal.value}}) on {{{dimensions}}}"
+  }
+
+  rule {
+    description           = "is too high > ${var.memory_threshold_major}%"
+    severity              = "Major"
+    detect_label          = "MAJOR"
+    disabled              = coalesce(var.memory_disabled_major, var.memory_disabled, var.detectors_disabled)
+    notifications         = coalescelist(var.memory_notifications_major, var.memory_notifications, var.notifications)
+    parameterized_subject = "[{{ruleSeverity}}]{{{detectorName}}} {{{readableRule}}} ({{inputs.signal.value}}) on {{{dimensions}}}"
+  }
+}
+
