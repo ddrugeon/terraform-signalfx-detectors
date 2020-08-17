@@ -1,5 +1,5 @@
 resource "signalfx_detector" "velero_scheduled_backup_missing" {
-  name = "${join("", formatlist("[%s]", var.prefixes))}[${var.environment}] Kubernetes verlero successful backup"
+  name = "${join("", formatlist("[%s]", var.prefixes))}[${var.environment}] Kubernetes velero successful backup"
 
   program_text = <<-EOF
     signal = data('velero_backup_success_total', ${module.filter-tags.filter_custom}, extrapolation='zero', rollup='delta')${var.velero_scheduled_backup_missing_aggregation_function}${var.velero_scheduled_backup_missing_transformation_function}.publish('signal')
@@ -7,7 +7,7 @@ resource "signalfx_detector" "velero_scheduled_backup_missing" {
 EOF
 
   rule {
-    description           = "are missing"
+    description           = "is missing"
     severity              = "Warning"
     detect_label          = "WARN"
     disabled              = coalesce(var.velero_scheduled_backup_missing_disabled, var.detectors_disabled)
