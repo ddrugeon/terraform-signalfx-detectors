@@ -171,7 +171,7 @@ variable "throttling_transformation_function" {
 variable "throttling_threshold_major" {
   description = "major threshold for throttling detector"
   type        = number
-  default     = 1000       # = 1 millisecond in nanoseconds
+  default     = 1000 # = 1 millisecond in nanoseconds
 }
 
 variable "throttling_threshold_warning" {
