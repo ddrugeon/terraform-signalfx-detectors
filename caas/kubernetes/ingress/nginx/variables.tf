@@ -85,8 +85,8 @@ variable "ingress_5xx_notifications_critical" {
 variable "ingress_5xx_aggregation_function" {
   description = "Aggregation function and group by for ingress_5xx detector (i.e. \".mean(by=['host'])\")"
   type        = string
-  #  default     = ".sum(by=['Ingress'])" # may be should we aggregate per ingress instead of per container
-  default = ""
+  # remove `controller_pod` for per ingress stats
+  default = ".sum(by=['controller_namespace', 'controller_class', 'controller_pod', 'ingress'])"
 }
 
 variable "ingress_5xx_transformation_function" {
@@ -160,8 +160,8 @@ variable "ingress_4xx_notifications_critical" {
 variable "ingress_4xx_aggregation_function" {
   description = "Aggregation function and group by for ingress_4xx detector (i.e. \".mean(by=['host'])\")"
   type        = string
-  #  default     = ".sum(by=['Ingress'])" # may be should we aggregate per ingress instead of per container
-  default = ""
+  # remove `controller_pod` for per ingress stats
+  default = ".sum(by=['controller_namespace', 'controller_class', 'controller_pod', 'ingress'])"
 }
 
 variable "ingress_4xx_transformation_function" {
