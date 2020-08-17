@@ -49,8 +49,8 @@ resource "signalfx_detector" "throttling" {
   name = "${join("", formatlist("[%s]", var.prefixes))}[${var.environment}] Docker container cpu throttling time"
 
   program_text = <<-EOF
-		A = data('throttling.usage.total', filter=filter('plugin', 'docker') and ${module.filter-tags.filter_custom})${var.throttling_aggregation_function}${var.throttling_transformation_function}
-		B = data('throttling.usage.limit', filter=filter('plugin', 'docker') and ${module.filter-tags.filter_custom})${var.throttling_aggregation_function}${var.throttling_transformation_function}
+		A = data('cpu.throttling_data.throttled_time', filter=filter('plugin', 'docker') and ${module.filter-tags.filter_custom}, rollup='delta')${var.throttling_aggregation_function}${var.throttling_transformation_function}
+		B = data('cpu.throttling_data.throttled_time', filter=filter('plugin', 'docker') and ${module.filter-tags.filter_custom}, rollup='delta')${var.throttling_aggregation_function}${var.throttling_transformation_function}
 		signal = (A/B).scale(100).publish('signal')
 		detect(when(signal > ${var.throttling_threshold_warning})).publish('WARN')
 		detect(when(signal > ${var.throttling_threshold_major}) and when(signal <= ${var.throttling_threshold_warning})).publish('MAJOR')
