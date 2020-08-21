@@ -60,3 +60,6 @@ rules:
   - watch
 ...
 ```
+
+If you use the [Helm chart](https://github.com/signalfx/signalfx-agent/tree/master/deployments/k8s/helm/signalfx-agent) 
+to deploy the agent, so you need chart version `>= 1.5.0` and enable `gatherVolumesMetrics: true` in `values.yml`.
