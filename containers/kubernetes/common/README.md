@@ -11,6 +11,7 @@ The following metrics must be emitted by the SignalFx agent:
 
 - `kubernetes.volume_inodes`
 - `kubernetes.volume_inodes_free`
+- `kubernetes.job.active`
 
 Here is a sample configuration fragment for the SignalFx agent:
 
@@ -29,6 +30,8 @@ monitors:
       - '!*network*'
 
 - type: kubernetes-cluster
+  extraMetrics:
+    - kubernetes.job.active
 
 - type: kubernetes-volumes
   extraMetrics:
