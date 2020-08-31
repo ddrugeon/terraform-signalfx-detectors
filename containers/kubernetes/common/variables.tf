@@ -56,172 +56,54 @@ variable "heartbeat_timeframe" {
   default     = "20m"
 }
 
-# Ready detectors
+# node_ready detectors
 
-variable "ready_disabled" {
-  description = "Disable all alerting rules for ready detector"
+variable "node_ready_disabled" {
+  description = "Disable all alerting rules for node_ready detector"
   type        = bool
   default     = null
 }
 
-variable "ready_notifications" {
-  description = "Notification recipients list for every alerting rules of ready detector"
+variable "node_ready_disabled_major" {
+  description = "Disable major alerting rule for node_ready detector"
+  type        = bool
+  default     = null
+}
+
+variable "node_ready_disabled_warning" {
+  description = "Disable warning alerting rule for node_ready detector"
+  type        = bool
+  default     = null
+}
+
+variable "node_ready_notifications" {
+  description = "Notification recipients list for every alerting rules of node_ready detector"
   type        = list
   default     = []
 }
 
-variable "ready_aggregation_function" {
-  description = "Aggregation function and group by for ready detector (i.e. \".mean(by=['host'])\")"
+variable "node_ready_notifications_major" {
+  description = "Notification recipients list for major alerting rule of node_ready detector"
+  type        = list
+  default     = []
+}
+
+variable "node_ready_notifications_warning" {
+  description = "Notification recipients list for warning alerting rule of node_ready detector"
+  type        = list
+  default     = []
+}
+
+variable "node_ready_aggregation_function" {
+  description = "Aggregation function and group by for node_ready detector (i.e. \".mean(by=['host'])\")"
   type        = string
   default     = ""
 }
 
-variable "ready_threshold_critical" {
-  description = "Critical threshold for ready detector"
-  type        = number
-  default     = 0
-}
-
-variable "ready_timer" {
-  description = "Lasting function window (i.e. 5m, 20m, 1h, 1d)"
+variable "node_ready_transformation_function" {
+  description = "Transformation function for node_ready detector (i.e. \".mean(over='5m')\"))"
   type        = string
-  default     = "30m"
-}
-
-# Volume_space detectors
-
-variable "volume_space_disabled" {
-  description = "Disable all alerting rules for volume_space detector"
-  type        = bool
-  default     = null
-}
-
-variable "volume_space_disabled_critical" {
-  description = "Disable critical alerting rule for volume_space detector"
-  type        = bool
-  default     = null
-}
-
-variable "volume_space_disabled_warning" {
-  description = "Disable warning alerting rule for volume_space detector"
-  type        = bool
-  default     = null
-}
-
-variable "volume_space_notifications" {
-  description = "Notification recipients list for every alerting rules of volume_space detector"
-  type        = list
-  default     = []
-}
-
-variable "volume_space_notifications_warning" {
-  description = "Notification recipients list for warning alerting rule of volume_space detector"
-  type        = list
-  default     = []
-}
-
-variable "volume_space_notifications_critical" {
-  description = "Notification recipients list for critical alerting rule of volume_space detector"
-  type        = list
-  default     = []
-}
-
-variable "volume_space_aggregation_function" {
-  description = "Aggregation function and group by for volume_space detector (i.e. \".mean(by=['host'])\")"
-  type        = string
-  default     = ""
-}
-
-variable "volume_space_transformation_function" {
-  description = "Transformation function for volume_space detector (mean, min, max)"
-  type        = string
-  default     = "min"
-}
-
-variable "volume_space_transformation_window" {
-  description = "Transformation window for volume_space detector (i.e. 5m, 20m, 1h, 1d)"
-  type        = string
-  default     = "5m"
-}
-
-variable "volume_space_threshold_critical" {
-  description = "Critical threshold for volume_space detector"
-  type        = number
-  default     = 95
-}
-
-variable "volume_space_threshold_warning" {
-  description = "Warning threshold for volume_space detector"
-  type        = number
-  default     = 90
-}
-
-# Volume_inodes detectors
-
-variable "volume_inodes_disabled" {
-  description = "Disable all alerting rules for volume_inodes detector"
-  type        = bool
-  default     = null
-}
-
-variable "volume_inodes_disabled_critical" {
-  description = "Disable critical alerting rule for volume_inodes detector"
-  type        = bool
-  default     = null
-}
-
-variable "volume_inodes_disabled_warning" {
-  description = "Disable warning alerting rule for volume_inodes detector"
-  type        = bool
-  default     = null
-}
-
-variable "volume_inodes_notifications" {
-  description = "Notification recipients list for every alerting rules of volume_inodes detector"
-  type        = list
-  default     = []
-}
-
-variable "volume_inodes_notifications_warning" {
-  description = "Notification recipients list for warning alerting rule of volume_inodes detector"
-  type        = list
-  default     = []
-}
-
-variable "volume_inodes_notifications_critical" {
-  description = "Notification recipients list for critical alerting rule of volume_inodes detector"
-  type        = list
-  default     = []
-}
-
-variable "volume_inodes_aggregation_function" {
-  description = "Aggregation function and group by for volume_inodes detector (i.e. \".mean(by=['host'])\")"
-  type        = string
-  default     = ""
-}
-
-variable "volume_inodes_transformation_function" {
-  description = "Transformation function for volume_inodes detector (mean, min, max)"
-  type        = string
-  default     = "min"
-}
-
-variable "volume_inodes_transformation_window" {
-  description = "Transformation window for volume_inodes detector (i.e. 5m, 20m, 1h, 1d)"
-  type        = string
-  default     = "5m"
-}
-
-variable "volume_inodes_threshold_critical" {
-  description = "Critical threshold for volume_inodes detector"
-  type        = number
-  default     = 95
-}
-
-variable "volume_inodes_threshold_warning" {
-  description = "Warning threshold for volume_inodes detector"
-  type        = number
-  default     = 90
+  default     = ".max(over='1h')"
 }
 
 # Pod_phase_status detectors
@@ -265,105 +147,39 @@ variable "pod_phase_status_notifications_critical" {
 variable "pod_phase_status_aggregation_function" {
   description = "Aggregation function and group by for pod_phase_status detector (i.e. \".mean(by=['host'])\")"
   type        = string
-  default     = ".sum(by=['kubernetes_namespace', 'kubernetes_pod_name'])"
+  default     = ""
 }
 
 variable "pod_phase_status_transformation_function" {
-  description = "Transformation function for pod_phase_status detector (mean, min, max)"
+  description = "Transformation function for pod_phase_status detector (i.e. \".mean(over='5m')\"))"
   type        = string
-  default     = "max"
+  default     = ".min(over='30m')"
 }
 
-variable "pod_phase_status_transformation_window" {
-  description = "Transformation window for pod_phase_status detector (i.e. 5m, 20m, 1h, 1d)"
-  type        = string
-  default     = "5m"
-}
+# container_ready detectors
 
-variable "pod_phase_status_aperiodic_duration" {
-  description = "Duration for the pod_phase_status block"
-  type        = string
-  default     = "10m"
-}
-
-variable "pod_phase_status_aperiodic_percentage" {
-  description = "Percentage for the pod_phase_status block"
-  type        = number
-  default     = 0.9
-}
-
-variable "pod_phase_status_clear_duration" {
-  description = "Duration for the pod_phase_status clear condition"
-  type        = string
-  default     = "15m"
-}
-
-# Error detectors
-
-variable "error_disabled" {
-  description = "Disable all alerting rules for error detector"
+variable "container_ready_disabled" {
+  description = "Disable all alerting rules for container_ready detector"
   type        = bool
   default     = null
 }
 
-variable "error_disabled_critical" {
-  description = "Disable critical alerting rule for error detector"
-  type        = bool
-  default     = null
-}
-
-variable "error_disabled_warning" {
-  description = "Disable warning alerting rule for error detector"
-  type        = bool
-  default     = null
-}
-
-variable "error_notifications" {
-  description = "Notification recipients list for every alerting rules of error detector"
+variable "container_ready_notifications" {
+  description = "Notification recipients list for every alerting rules of container_ready detector"
   type        = list
   default     = []
 }
 
-variable "error_notifications_warning" {
-  description = "Notification recipients list for warning alerting rule of error detector"
-  type        = list
-  default     = []
-}
-
-variable "error_notifications_critical" {
-  description = "Notification recipients list for critical alerting rule of error detector"
-  type        = list
-  default     = []
-}
-
-variable "error_aggregation_function" {
-  description = "Aggregation function and group by for error detector (i.e. \".mean(by=['host'])\")"
+variable "container_ready_aggregation_function" {
+  description = "Aggregation function and group by for container_ready detector (i.e. \".mean(by=['host'])\")"
   type        = string
-  default     = ".sum(by=['kubernetes_namespace', 'kubernetes_pod_name', 'container_status_reason'])"
+  default     = ""
 }
 
-variable "error_transformation_function" {
-  description = "Transformation function for error detector (mean, min, max)"
+variable "container_ready_transformation_function" {
+  description = "Transformation function for container_ready detector (i.e. \".mean(over='5m')\"))"
   type        = string
-  default     = "min"
-}
-
-variable "error_transformation_window" {
-  description = "Transformation window for error detector (i.e. 5m, 20m, 1h, 1d)"
-  type        = string
-  default     = "15m"
-}
-
-variable "error_threshold_critical" {
-  description = "Critical threshold for error detector"
-  type        = number
-  default     = 0.5
-}
-
-variable "error_threshold_warning" {
-  description = "Warning threshold for error detector"
-  type        = number
-  default     = 0
+  default     = ".max(over='15m')"
 }
 
 # Terminated detectors
@@ -374,32 +190,8 @@ variable "terminated_disabled" {
   default     = null
 }
 
-variable "terminated_disabled_critical" {
-  description = "Disable critical alerting rule for terminated detector"
-  type        = bool
-  default     = null
-}
-
-variable "terminated_disabled_warning" {
-  description = "Disable warning alerting rule for terminated detector"
-  type        = bool
-  default     = null
-}
-
 variable "terminated_notifications" {
   description = "Notification recipients list for every alerting rules of terminated detector"
-  type        = list
-  default     = []
-}
-
-variable "terminated_notifications_warning" {
-  description = "Notification recipients list for warning alerting rule of terminated detector"
-  type        = list
-  default     = []
-}
-
-variable "terminated_notifications_critical" {
-  description = "Notification recipients list for critical alerting rule of terminated detector"
   type        = list
   default     = []
 }
@@ -407,25 +199,13 @@ variable "terminated_notifications_critical" {
 variable "terminated_aggregation_function" {
   description = "Aggregation function and group by for terminated detector (i.e. \".mean(by=['host'])\")"
   type        = string
-  default     = ".sum(by=['kubernetes_namespace', 'kubernetes_pod_name', 'container_status_reason'])"
+  default     = ".sum(by=['kubernetes_cluster', 'kubernetes_namespace', 'kubernetes_pod_name'])"
 }
 
 variable "terminated_transformation_function" {
-  description = "Transformation function for terminated detector (mean, min, max)"
+  description = "Transformation function for terminated detector (i.e. \".mean(over='5m')\"))"
   type        = string
-  default     = "sum"
-}
-
-variable "terminated_transformation_window" {
-  description = "Transformation window for terminated detector (i.e. 5m, 20m, 1h, 1d)"
-  type        = string
-  default     = "10m"
-}
-
-variable "terminated_threshold_critical" {
-  description = "Critical threshold for terminated detector"
-  type        = number
-  default     = 0.5
+  default     = ".sum(over='15m')"
 }
 
 variable "terminated_threshold_warning" {
@@ -434,151 +214,331 @@ variable "terminated_threshold_warning" {
   default     = 0
 }
 
-# Replica_available detectors
+# oom_killed detectors
 
-variable "replica_available_disabled" {
-  description = "Disable all alerting rules for replica_available detector"
+variable "oom_killed_disabled" {
+  description = "Disable all alerting rules for oom_killed detector"
   type        = bool
   default     = null
 }
 
-variable "replica_available_disabled_critical" {
-  description = "Disable critical alerting rule for replica_available detector"
-  type        = bool
-  default     = null
-}
-
-variable "replica_available_disabled_warning" {
-  description = "Disable warning alerting rule for replica_available detector"
-  type        = bool
-  default     = null
-}
-
-variable "replica_available_notifications" {
-  description = "Notification recipients list for every alerting rules of replica_available detector"
+variable "oom_killed_notifications" {
+  description = "Notification recipients list for every alerting rules of oom_killed detector"
   type        = list
   default     = []
 }
 
-variable "replica_available_notifications_warning" {
-  description = "Notification recipients list for warning alerting rule of replica_available detector"
-  type        = list
-  default     = []
-}
-
-variable "replica_available_notifications_critical" {
-  description = "Notification recipients list for critical alerting rule of replica_available detector"
-  type        = list
-  default     = []
-}
-
-variable "replica_available_aggregation_function" {
-  description = "Aggregation function and group by for replica_available detector (i.e. \".mean(by=['host'])\")"
+variable "oom_killed_aggregation_function" {
+  description = "Aggregation function and group by for oom_killed detector (i.e. \".mean(by=['host'])\")"
   type        = string
-  default     = ".max(by=['kubernetes_namespace'])"
+  default     = ""
 }
 
-variable "replica_available_transformation_function" {
-  description = "Transformation function for replica_available detector (mean, min, max)"
+variable "oom_killed_transformation_function" {
+  description = "Transformation function for oom_killed detector (i.e. \".mean(over='5m')\"))"
   type        = string
-  default     = "max"
+  default     = ".sum(over='15m')"
 }
 
-variable "replica_available_transformation_window" {
-  description = "Transformation window for replica_available detector (i.e. 5m, 20m, 1h, 1d)"
-  type        = string
-  default     = "5m"
-}
-
-variable "replica_available_threshold_critical" {
-  description = "Critical threshold for replica_available detector"
+variable "oom_killed_threshold_warning" {
+  description = "Warning threshold for oom_killed detector"
   type        = number
   default     = 0
 }
 
-variable "replica_available_threshold_warning" {
-  description = "Warning threshold for replica_available detector"
-  type        = number
-  default     = 0
-}
+# deployment_crashloopbackoff detectors
 
-variable "replica_available_threshold_number_requests" {
-  description = "Number threshold for replica_available detector"
-  type        = number
-  default     = 1
-}
-
-# Replica_ready detectors
-
-variable "replica_ready_disabled" {
-  description = "Disable all alerting rules for replica_ready detector"
+variable "deployment_crashloopbackoff_disabled" {
+  description = "Disable all alerting rules for deployment_crashloopbackoff detector"
   type        = bool
   default     = null
 }
 
-variable "replica_ready_disabled_critical" {
-  description = "Disable critical alerting rule for replica_ready detector"
-  type        = bool
-  default     = null
-}
-
-variable "replica_ready_disabled_warning" {
-  description = "Disable warning alerting rule for replica_ready detector"
-  type        = bool
-  default     = null
-}
-
-variable "replica_ready_notifications" {
-  description = "Notification recipients list for every alerting rules of replica_ready detector"
+variable "deployment_crashloopbackoff_notifications" {
+  description = "Notification recipients list for every alerting rules of deployment_crashloopbackoff detector"
   type        = list
   default     = []
 }
 
-variable "replica_ready_notifications_warning" {
-  description = "Notification recipients list for warning alerting rule of replica_ready detector"
-  type        = list
-  default     = []
-}
-
-variable "replica_ready_notifications_critical" {
-  description = "Notification recipients list for critical alerting rule of replica_ready detector"
-  type        = list
-  default     = []
-}
-
-variable "replica_ready_aggregation_function" {
-  description = "Aggregation function and group by for replica_ready detector (i.e. \".mean(by=['host'])\")"
+variable "deployment_crashloopbackoff_aggregation_function" {
+  description = "Aggregation function and group by for deployment_crashloopbackoff detector (i.e. \".mean(by=['host'])\")"
   type        = string
-  default     = ".max(by=['kubernetes_namespace'])"
+  default     = ".sum(by=['kubernetes_cluster', 'kubernetes_namespace', 'deployment'])"
 }
 
-variable "replica_ready_transformation_function" {
-  description = "Transformation function for replica_ready detector (mean, min, max)"
+variable "deployment_crashloopbackoff_transformation_function" {
+  description = "Transformation function for deployment_crashloopbackoff detector (i.e. \".mean(over='5m')\"))"
   type        = string
-  default     = "max"
+  default     = ".sum(over='15m')"
 }
 
-variable "replica_ready_transformation_window" {
-  description = "Transformation window for replica_ready detector (i.e. 5m, 20m, 1h, 1d)"
-  type        = string
-  default     = "5m"
-}
-
-variable "replica_ready_threshold_critical" {
-  description = "Critical threshold for replica_ready detector"
+variable "deployment_crashloopbackoff_threshold_warning" {
+  description = "Warning threshold for deployment_crashloopbackoff detector"
   type        = number
   default     = 0
 }
 
-variable "replica_ready_threshold_warning" {
-  description = "Warning threshold for replica_ready detector"
+# daemonset_crashloopbackoff detectors
+
+variable "daemonset_crashloopbackoff_disabled" {
+  description = "Disable all alerting rules for daemonset_crashloopbackoff detector"
+  type        = bool
+  default     = null
+}
+
+variable "daemonset_crashloopbackoff_notifications" {
+  description = "Notification recipients list for every alerting rules of daemonset_crashloopbackoff detector"
+  type        = list
+  default     = []
+}
+
+variable "daemonset_crashloopbackoff_aggregation_function" {
+  description = "Aggregation function and group by for daemonset_crashloopbackoff detector (i.e. \".mean(by=['host'])\")"
+  type        = string
+  default     = ".sum(by=['kubernetes_cluster', 'kubernetes_namespace', 'daemonSet'])"
+}
+
+variable "daemonset_crashloopbackoff_transformation_function" {
+  description = "Transformation function for daemonset_crashloopbackoff detector (i.e. \".mean(over='5m')\"))"
+  type        = string
+  default     = ".sum(over='15m')"
+}
+
+variable "daemonset_crashloopbackoff_threshold_warning" {
+  description = "Warning threshold for daemonset_crashloopbackoff detector"
   type        = number
   default     = 0
 }
 
-variable "replica_ready_threshold_number_requests" {
-  description = "Number threshold for replica_ready detector"
+# job_failed detectors
+
+variable "job_failed_disabled" {
+  description = "Disable all alerting rules for job_failed detector"
+  type        = bool
+  default     = null
+}
+
+variable "job_failed_notifications" {
+  description = "Notification recipients list for every alerting rules of job_failed detector"
+  type        = list
+  default     = []
+}
+
+variable "job_failed_aggregation_function" {
+  description = "Aggregation function and group by for job_failed detector (i.e. \".mean(by=['host'])\")"
+  type        = string
+  default     = ""
+}
+
+variable "job_failed_transformation_function" {
+  description = "Transformation function for job_failed detector (i.e. \".mean(over='5m')\"))"
+  type        = string
+  default     = ".sum(over='15m')"
+}
+
+variable "job_failed_threshold_warning" {
+  description = "Warning threshold for job_failed detector"
   type        = number
-  default     = 1
+  default     = 0
+}
+
+# daemonset_scheduled detectors
+
+variable "daemonset_scheduled_disabled" {
+  description = "Disable all alerting rules for daemonset_scheduled detector"
+  type        = bool
+  default     = null
+}
+
+variable "daemonset_scheduled_notifications" {
+  description = "Notification recipients list for every alerting rules of daemonset_scheduled detector"
+  type        = list
+  default     = []
+}
+
+variable "daemonset_scheduled_aggregation_function" {
+  description = "Aggregation function and group by for daemonset_scheduled detector (i.e. \".mean(by=['host'])\")"
+  type        = string
+  default     = ""
+}
+
+variable "daemonset_scheduled_transformation_function" {
+  description = "Transformation function for daemonset_scheduled detector (i.e. \".mean(over='5m')\"))"
+  type        = string
+  default     = ".min(over='5m')"
+}
+
+variable "daemonset_scheduled_threshold_critical" {
+  description = "Critical threshold for daemonset_scheduled detector"
+  type        = number
+  default     = 0
+}
+
+# daemonset_ready detectors
+
+variable "daemonset_ready_disabled" {
+  description = "Disable all alerting rules for daemonset_ready detector"
+  type        = bool
+  default     = null
+}
+
+variable "daemonset_ready_notifications" {
+  description = "Notification recipients list for every alerting rules of daemonset_ready detector"
+  type        = list
+  default     = []
+}
+
+variable "daemonset_ready_aggregation_function" {
+  description = "Aggregation function and group by for daemonset_ready detector (i.e. \".mean(by=['host'])\")"
+  type        = string
+  default     = ""
+}
+
+variable "daemonset_ready_transformation_function" {
+  description = "Transformation function for daemonset_ready detector (i.e. \".mean(over='5m')\"))"
+  type        = string
+  default     = ".max(over='5m')"
+}
+
+variable "daemonset_ready_threshold_critical" {
+  description = "Critical threshold for daemonset_ready detector"
+  type        = number
+  default     = 100
+}
+
+# daemonset_misscheduled detectors
+
+variable "daemonset_misscheduled_disabled" {
+  description = "Disable all alerting rules for daemonset_misscheduled detector"
+  type        = bool
+  default     = null
+}
+
+variable "daemonset_misscheduled_notifications" {
+  description = "Notification recipients list for every alerting rules of daemonset_misscheduled detector"
+  type        = list
+  default     = []
+}
+
+variable "daemonset_misscheduled_aggregation_function" {
+  description = "Aggregation function and group by for daemonset_misscheduled detector (i.e. \".mean(by=['host'])\")"
+  type        = string
+  default     = ""
+}
+
+variable "daemonset_misscheduled_transformation_function" {
+  description = "Transformation function for daemonset_misscheduled detector (i.e. \".mean(over='5m')\"))"
+  type        = string
+  default     = ".min(over='5m')"
+}
+
+variable "daemonset_misscheduled_threshold_critical" {
+  description = "Critical threshold for daemonset_misscheduled detector"
+  type        = number
+  default     = 0
+}
+
+# deployment_available detectors
+
+variable "deployment_available_disabled" {
+  description = "Disable all alerting rules for deployment_available detector"
+  type        = bool
+  default     = null
+}
+
+variable "deployment_available_notifications" {
+  description = "Notification recipients list for every alerting rules of deployment_available detector"
+  type        = list
+  default     = []
+}
+
+variable "deployment_available_aggregation_function" {
+  description = "Aggregation function and group by for deployment_available detector (i.e. \".mean(by=['host'])\")"
+  type        = string
+  default     = ""
+}
+
+variable "deployment_available_transformation_function" {
+  description = "Transformation function for deployment_available detector (i.e. \".mean(over='5m')\"))"
+  type        = string
+  default     = ".min(over='5m')"
+}
+
+# replicaset_available detectors
+
+variable "replicaset_available_disabled" {
+  description = "Disable all alerting rules for replicaset_available detector"
+  type        = bool
+  default     = null
+}
+
+variable "replicaset_available_notifications" {
+  description = "Notification recipients list for every alerting rules of replicaset_available detector"
+  type        = list
+  default     = []
+}
+
+variable "replicaset_available_aggregation_function" {
+  description = "Aggregation function and group by for replicaset_available detector (i.e. \".mean(by=['host'])\")"
+  type        = string
+  default     = ""
+}
+
+variable "replicaset_available_transformation_function" {
+  description = "Transformation function for replicaset_available detector (i.e. \".mean(over='5m')\"))"
+  type        = string
+  default     = ".min(over='5m')"
+}
+
+# replication_controller_available detectors
+
+variable "replication_controller_available_disabled" {
+  description = "Disable all alerting rules for replication_controller_available detector"
+  type        = bool
+  default     = null
+}
+
+variable "replication_controller_available_notifications" {
+  description = "Notification recipients list for every alerting rules of replication_controller_available detector"
+  type        = list
+  default     = []
+}
+
+variable "replication_controller_available_aggregation_function" {
+  description = "Aggregation function and group by for replication_controller_available detector (i.e. \".mean(by=['host'])\")"
+  type        = string
+  default     = ""
+}
+
+variable "replication_controller_available_transformation_function" {
+  description = "Transformation function for replication_controller_available detector (i.e. \".mean(over='5m')\"))"
+  type        = string
+  default     = ".min(over='5m')"
+}
+
+# satefulset_ready detectors
+
+variable "satefulset_ready_disabled" {
+  description = "Disable all alerting rules for satefulset_ready detector"
+  type        = bool
+  default     = null
+}
+
+variable "satefulset_ready_notifications" {
+  description = "Notification recipients list for every alerting rules of satefulset_ready detector"
+  type        = list
+  default     = []
+}
+
+variable "satefulset_ready_aggregation_function" {
+  description = "Aggregation function and group by for satefulset_ready detector (i.e. \".mean(by=['host'])\")"
+  type        = string
+  default     = ""
+}
+
+variable "satefulset_ready_transformation_function" {
+  description = "Transformation function for satefulset_ready detector (i.e. \".mean(over='5m')\"))"
+  type        = string
+  default     = ".min(over='5m')"
 }
 
