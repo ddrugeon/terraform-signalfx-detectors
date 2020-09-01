@@ -3,7 +3,7 @@ resource "signalfx_detector" "heartbeat" {
 
   program_text = <<-EOF
     from signalfx.detectors.not_reporting import not_reporting
-    signal = data('kubernetes.node_ready', filter=${module.filter-tags.filter_custom}.mean(by=['kubernetes_cluster']).publish('signal')
+    signal = data('kubernetes.node_ready', filter=${module.filter-tags.filter_custom}).mean(by=['kubernetes_cluster']).publish('signal')
     not_reporting.detector(stream=signal, resource_identifier=['kubernetes_cluster'], duration='${var.heartbeat_timeframe}').publish('CRIT')
 EOF
 
@@ -193,7 +193,7 @@ resource "signalfx_detector" "daemonset_scheduled" {
 EOF
 
   rule {
-    description           = "are too high > ${var.daemonset_scheduled_threshold_critical}"
+    description           = "do not match daemonsets desired"
     severity              = "Critical"
     detect_label          = "CRIT"
     disabled              = coalesce(var.daemonset_scheduled_disabled, var.detectors_disabled)
