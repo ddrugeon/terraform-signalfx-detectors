@@ -1,29 +1,10 @@
-resource "signalfx_detector" "heartbeat" {
-  name = "${join("", formatlist("[%s]", var.prefixes))}[${var.environment}] Kubernetes node heartbeat"
-
-  program_text = <<-EOF
-    from signalfx.detectors.not_reporting import not_reporting
-    signal = data('kubernetes.node_ready', filter=(not filter('aws_state', '{Code: 32,Name: shutting-down', '{Code: 48,Name: terminated}', '{Code: 62,Name: stopping}', '{Code: 80,Name: stopped}')) and (not filter('gcp_status', '{Code=3, Name=STOPPING}', '{Code=4, Name=TERMINATED}')) and (not filter('azure_power_state', 'PowerState/stopping', 'PowerState/stoppped', 'PowerState/deallocating', 'PowerState/deallocated')) and ${module.filter-tags.filter_custom}).publish('signal')
-    not_reporting.detector(stream=signal, resource_identifier=None, duration='${var.heartbeat_timeframe}').publish('CRIT')
-EOF
-
-  rule {
-    description           = "has not reported in ${var.heartbeat_timeframe}"
-    severity              = "Critical"
-    detect_label          = "CRIT"
-    disabled              = coalesce(var.heartbeat_disabled, var.detectors_disabled)
-    notifications         = coalescelist(var.heartbeat_notifications, var.notifications)
-    parameterized_subject = "[{{ruleSeverity}}]{{{detectorName}}} {{{ruleName}}} on {{{dimensions}}}"
-  }
-}
-
 resource "signalfx_detector" "node_ready" {
   name = "${join("", formatlist("[%s]", var.prefixes))}[${var.environment}] Kubernetes node status"
 
   program_text = <<-EOF
-    signal = data('kubernetes.node_ready', filter=(not filter('aws_state', '{Code: 32,Name: shutting-down', '{Code: 48,Name: terminated}', '{Code: 62,Name: stopping}', '{Code: 80,Name: stopped}')) and (not filter('gcp_status', '{Code=3, Name=STOPPING}', '{Code=4, Name=TERMINATED}')) and (not filter('azure_power_state', 'PowerState/stopping', 'PowerState/stoppped', 'PowerState/deallocating', 'PowerState/deallocated')) and ${module.filter-tags.filter_custom})${var.node_ready_aggregation_function}${var.node_ready_transformation_function}.publish('signal')
-    detect(when(signal == 0)).publish('WARN')
-    detect(when(signal == -1)).publish('MAJOR')
+    signal = data('kubernetes.node_ready', filter=${module.filter-tags.filter_custom})${var.node_ready_aggregation_function}${var.node_ready_transformation_function}.publish('signal')
+    detect(when(signal == 0, lasting='1h')).publish('WARN')
+    detect(when(signal == -1, lasting='30m')).publish('MAJOR')
 EOF
 
   rule {
@@ -51,8 +32,8 @@ resource "signalfx_detector" "pod_phase_status" {
   program_text = <<-EOF
     # Current phase of the pod (1 - Pending, 2 - Running, 3 - Succeeded, 4 - Failed, 5 - Unknown)
     signal = data('kubernetes.pod_phase', filter=${module.filter-tags.filter_custom}, extrapolation='zero')${var.pod_phase_status_aggregation_function}${var.pod_phase_status_transformation_function}.publish('signal')
-    detect(when(signal == 4)).publish('CRIT')
-    detect(when(signal == 1) or when(signal == 5)).publish('WARN')
+    detect(when(signal == 4, lasting='30m')).publish('CRIT')
+    detect(when(signal == 1, lasting='30m') or when(signal == 5, lasting='30m')).publish('WARN')
 EOF
 
   rule {
@@ -79,7 +60,7 @@ resource "signalfx_detector" "container_ready" {
 
   program_text = <<-EOF
     signal = data('kubernetes.container_ready', filter=(not filter('cronJob', '*')) and (not filter('job', '*')) and (not filter('container_status', 'terminated')) and ${module.filter-tags.filter_custom})${var.container_ready_aggregation_function}${var.container_ready_transformation_function}.fill(1).publish('signal')
-    detect(when(signal == 0)).publish('WARN')
+    detect(when(signal == 0, lasting='30m')).publish('WARN')
 EOF
 
   rule {
@@ -97,7 +78,7 @@ resource "signalfx_detector" "terminated" {
 
   program_text = <<-EOF
     signal = data('kubernetes.container_ready', filter=filter('container_status', 'terminated') and not filter('container_status_reason', 'Completed') and ${module.filter-tags.filter_custom})${var.terminated_aggregation_function}${var.terminated_transformation_function}.publish('signal')
-    detect(when(signal > ${var.terminated_threshold_warning})).publish('WARN')
+    detect(when(signal > ${var.terminated_threshold_warning}, lasting='10m')).publish('WARN')
 EOF
 
   rule {
@@ -189,7 +170,7 @@ resource "signalfx_detector" "daemonset_scheduled" {
     A = data('kubernetes.daemon_set.desired_scheduled', filter=${module.filter-tags.filter_custom})${var.daemonset_scheduled_aggregation_function}${var.daemonset_scheduled_transformation_function}
     B = data('kubernetes.daemon_set.current_scheduled', filter=${module.filter-tags.filter_custom})${var.daemonset_scheduled_aggregation_function}${var.daemonset_scheduled_transformation_function}
     signal = (A-B).publish('signal')
-    detect(when(signal > ${var.daemonset_scheduled_threshold_critical})).publish('CRIT')
+    detect(when(signal != 0, lasting='5m')).publish('CRIT')
 EOF
 
   rule {
@@ -209,7 +190,7 @@ resource "signalfx_detector" "daemonset_ready" {
     A = data('kubernetes.daemon_set.ready', filter=${module.filter-tags.filter_custom})${var.daemonset_ready_aggregation_function}${var.daemonset_ready_transformation_function}
     B = data('kubernetes.daemon_set.desired_scheduled', filter=${module.filter-tags.filter_custom})${var.daemonset_ready_aggregation_function}${var.daemonset_ready_transformation_function}
     signal = (A/B).scale(100).publish('signal')
-    detect(when(signal < ${var.daemonset_ready_threshold_critical})).publish('CRIT')
+    detect(when(signal < ${var.daemonset_ready_threshold_critical}, lasting='5m')).publish('CRIT')
 EOF
 
   rule {
@@ -227,7 +208,7 @@ resource "signalfx_detector" "daemonset_misscheduled" {
 
   program_text = <<-EOF
     signal = data('kubernetes.daemon_set.misscheduled', filter=${module.filter-tags.filter_custom})${var.daemonset_misscheduled_aggregation_function}${var.daemonset_misscheduled_transformation_function}.publish('signal')
-    detect(when(signal > ${var.daemonset_misscheduled_threshold_critical})).publish('CRIT')
+    detect(when(signal > ${var.daemonset_misscheduled_threshold_critical}, lasting='5m')).publish('CRIT')
 EOF
 
   rule {
@@ -247,7 +228,7 @@ resource "signalfx_detector" "deployment_available" {
     A = data('kubernetes.deployment.desired', filter=${module.filter-tags.filter_custom})${var.deployment_available_aggregation_function}${var.deployment_available_transformation_function}
     B = data('kubernetes.deployment.available', filter=${module.filter-tags.filter_custom})${var.deployment_available_aggregation_function}${var.deployment_available_transformation_function}
     signal = (A-B).publish('signal')
-    detect(when(signal != 0)).publish('CRIT')
+    detect(when(signal != 0, lasting='5m')).publish('CRIT')
 EOF
 
   rule {
@@ -267,7 +248,7 @@ resource "signalfx_detector" "replicaset_available" {
     A = data('kubernetes.replica_set.desired', filter=${module.filter-tags.filter_custom})${var.replicaset_available_aggregation_function}${var.replicaset_available_transformation_function}
     B = data('kubernetes.replica_set.available', filter=${module.filter-tags.filter_custom})${var.replicaset_available_aggregation_function}${var.replicaset_available_transformation_function}
     signal = (A-B).publish('signal')
-    detect(when(signal != 0)).publish('CRIT')
+    detect(when(signal != 0, lasting='5m')).publish('CRIT')
 EOF
 
   rule {
@@ -287,7 +268,7 @@ resource "signalfx_detector" "replication_controller_available" {
     A = data('kubernetes.replication_controller.desired', filter=${module.filter-tags.filter_custom})${var.replication_controller_available_aggregation_function}${var.replication_controller_available_transformation_function}
     B = data('kubernetes.replication_controller.available', filter=${module.filter-tags.filter_custom})${var.replication_controller_available_aggregation_function}${var.replication_controller_available_transformation_function}
     signal = (A-B).publish('signal')
-    detect(when(signal != 0)).publish('CRIT')
+    detect(when(signal != 0, lasting='5m')).publish('CRIT')
 EOF
 
   rule {
@@ -307,7 +288,7 @@ resource "signalfx_detector" "satefulset_ready" {
     A = data('kubernetes.stateful_set.desired', filter=${module.filter-tags.filter_custom})${var.satefulset_ready_aggregation_function}${var.satefulset_ready_transformation_function}
     B = data('kubernetes.stateful_set.ready', filter=${module.filter-tags.filter_custom})${var.satefulset_ready_aggregation_function}${var.satefulset_ready_transformation_function}
     signal = (A-B).publish('signal')
-    detect(when(signal != 0)).publish('CRIT')
+    detect(when(signal != 0, lasting='5m')).publish('CRIT')
 EOF
 
   rule {

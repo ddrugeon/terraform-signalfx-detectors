@@ -103,7 +103,7 @@ variable "node_ready_aggregation_function" {
 variable "node_ready_transformation_function" {
   description = "Transformation function for node_ready detector (i.e. \".mean(over='5m')\"))"
   type        = string
-  default     = ".max(over='1h')"
+  default     = ""
 }
 
 # Pod_phase_status detectors
@@ -153,7 +153,7 @@ variable "pod_phase_status_aggregation_function" {
 variable "pod_phase_status_transformation_function" {
   description = "Transformation function for pod_phase_status detector (i.e. \".mean(over='5m')\"))"
   type        = string
-  default     = ".min(over='30m')"
+  default     = ""
 }
 
 # container_ready detectors
@@ -173,13 +173,13 @@ variable "container_ready_notifications" {
 variable "container_ready_aggregation_function" {
   description = "Aggregation function and group by for container_ready detector (i.e. \".mean(by=['host'])\")"
   type        = string
-  default     = ""
+  default     = ".sum(by=['kubernetes_cluster', 'kubernetes_namespace', 'kubernetes_pod_name'])"
 }
 
 variable "container_ready_transformation_function" {
   description = "Transformation function for container_ready detector (i.e. \".mean(over='5m')\"))"
   type        = string
-  default     = ".max(over='15m')"
+  default     = ""
 }
 
 # Terminated detectors
@@ -205,7 +205,7 @@ variable "terminated_aggregation_function" {
 variable "terminated_transformation_function" {
   description = "Transformation function for terminated detector (i.e. \".mean(over='5m')\"))"
   type        = string
-  default     = ".sum(over='15m')"
+  default     = ""
 }
 
 variable "terminated_threshold_warning" {
@@ -237,7 +237,7 @@ variable "oom_killed_aggregation_function" {
 variable "oom_killed_transformation_function" {
   description = "Transformation function for oom_killed detector (i.e. \".mean(over='5m')\"))"
   type        = string
-  default     = ".sum(over='15m')"
+  default     = ""
 }
 
 variable "oom_killed_threshold_warning" {
@@ -365,13 +365,7 @@ variable "daemonset_scheduled_aggregation_function" {
 variable "daemonset_scheduled_transformation_function" {
   description = "Transformation function for daemonset_scheduled detector (i.e. \".mean(over='5m')\"))"
   type        = string
-  default     = ".min(over='5m')"
-}
-
-variable "daemonset_scheduled_threshold_critical" {
-  description = "Critical threshold for daemonset_scheduled detector"
-  type        = number
-  default     = 0
+  default     = ""
 }
 
 # daemonset_ready detectors
@@ -397,7 +391,7 @@ variable "daemonset_ready_aggregation_function" {
 variable "daemonset_ready_transformation_function" {
   description = "Transformation function for daemonset_ready detector (i.e. \".mean(over='5m')\"))"
   type        = string
-  default     = ".max(over='5m')"
+  default     = ""
 }
 
 variable "daemonset_ready_threshold_critical" {
@@ -429,7 +423,7 @@ variable "daemonset_misscheduled_aggregation_function" {
 variable "daemonset_misscheduled_transformation_function" {
   description = "Transformation function for daemonset_misscheduled detector (i.e. \".mean(over='5m')\"))"
   type        = string
-  default     = ".min(over='5m')"
+  default     = ""
 }
 
 variable "daemonset_misscheduled_threshold_critical" {
@@ -461,7 +455,7 @@ variable "deployment_available_aggregation_function" {
 variable "deployment_available_transformation_function" {
   description = "Transformation function for deployment_available detector (i.e. \".mean(over='5m')\"))"
   type        = string
-  default     = ".min(over='5m')"
+  default     = ""
 }
 
 # replicaset_available detectors
@@ -487,7 +481,7 @@ variable "replicaset_available_aggregation_function" {
 variable "replicaset_available_transformation_function" {
   description = "Transformation function for replicaset_available detector (i.e. \".mean(over='5m')\"))"
   type        = string
-  default     = ".min(over='5m')"
+  default     = ""
 }
 
 # replication_controller_available detectors
@@ -513,7 +507,7 @@ variable "replication_controller_available_aggregation_function" {
 variable "replication_controller_available_transformation_function" {
   description = "Transformation function for replication_controller_available detector (i.e. \".mean(over='5m')\"))"
   type        = string
-  default     = ".min(over='5m')"
+  default     = ""
 }
 
 # satefulset_ready detectors
@@ -539,6 +533,6 @@ variable "satefulset_ready_aggregation_function" {
 variable "satefulset_ready_transformation_function" {
   description = "Transformation function for satefulset_ready detector (i.e. \".mean(over='5m')\"))"
   type        = string
-  default     = ".min(over='5m')"
+  default     = ""
 }
 
