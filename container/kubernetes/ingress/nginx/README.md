@@ -34,8 +34,7 @@ monitors:
         - '!nginx_ingress_controller_nginx_process_resident_memory_bytes'
 ```
 
-__Note__: This whielisting type of metrics filtering is highly recommended
+__Note__: This whitelisting type of metrics filtering is highly recommended
 while prometheus exporters often send lot of metrics where not all useful.
 And `prometheus-exporter` SignalFx monitor consider every metrics as custom,
 so this could have a significant impact on billing.
-But feel free to add 
