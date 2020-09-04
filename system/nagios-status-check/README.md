@@ -32,6 +32,13 @@ Here is an example :
     script: check_ipmitool
   telegrafParser:
     dataFormat: nagios
+- type: telegraf/exec
+  intervalSeconds: 30
+  command: /usr/local/bin/scripts/check-megaraidsas
+  extraDimensions:
+    script: check_megaraidsas
+  telegrafParser:
+    dataFormat: nagios
 ```
 
 ## Inputs
