@@ -83,11 +83,5 @@ variable "status_check_aggregation_function" {
 variable "status_check_transformation_function" {
   description = "Transformation function for status_check detector (mean, min, max)"
   type        = string
-  default     = "min"
-}
-
-variable "status_check_transformation_window" {
-  description = "Transformation window for status_check detector (i.e. 5m, 20m, 1h, 1d)"
-  type        = string
-  default     = "15m"
+  default     = ".min(over='15m')"
 }

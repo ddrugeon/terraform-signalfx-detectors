@@ -34,8 +34,6 @@ Here is an example :
     dataFormat: nagios
 ```
 
-Ideally, use an `extraDimensions` which allows to easily identify the executed script.
-
 ## Inputs
 
 | Name | Description | Type | Default | Required |
@@ -64,7 +62,7 @@ Ideally, use an `extraDimensions` which allows to easily identify the executed s
 
 ## Related documentation
 
-[Official documentation for the telegraf exec plugin](https://docs.signalfx.com/en/latest/integrations/agent/monitors/telegraf-exec.html)
-[Nagios documentation](https://nagios-plugins.org/doc/guidelines.html#AEN78)
-[Telegraf exec plugin](https://github.com/influxdata/telegraf/tree/master/plugins/inputs/exec)
-[Telegraf nagios parser](https://github.com/influxdata/telegraf/tree/master/plugins/parsers/nagios)
+- [Official documentation for the telegraf exec plugin](https://docs.signalfx.com/en/latest/integrations/agent/monitors/telegraf-exec.html)
+- [Nagios documentation](https://nagios-plugins.org/doc/guidelines.html#AEN78)
+- [Telegraf exec plugin](https://github.com/influxdata/telegraf/tree/master/plugins/inputs/exec)
+- [Telegraf nagios parser](https://github.com/influxdata/telegraf/tree/master/plugins/parsers/nagios)
